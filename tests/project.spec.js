@@ -1,7 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
 const path = require("path");
-const PDFDocument = require("pdfkit");
+const PDFDocument = require("pdfkit"); // only used for documenting scrapped/extracted data not for pdf generating test
 
 test.describe("Weather.com tests", () => {
   let browser;
@@ -78,7 +78,7 @@ test.describe("Weather.com tests", () => {
     }
   });
 
-  test("Handle multiple browser contexts", async () => {
+  test("Handle multiple browser contexts and interacting with elements", async () => {
     try {
       await page.goto("https://www.bbc.com/weather/");
       const context2 = await browser.newContext();
@@ -87,13 +87,28 @@ test.describe("Weather.com tests", () => {
         waitUntil: "load",
         timeout: 60000,
       });
+      await page2.waitForSelector("#wr-unit--temperature-aria-id", {
+        timeout: 10000,
+      });
+
+      await page2.selectOption("#wr-unit--temperature-aria-id", "f");
+
+      const selectedOption = await page2.$eval(
+        "#wr-unit--temperature-aria-id",
+        (element) => element.value
+      );
+      console.log(`Selected temperature unit: ${selectedOption}`);
+      if (selectedOption !== "f") {
+        throw new Error("Failed to select Fahrenheit");
+      }
+
       await context2.close();
     } catch (error) {
       console.error("Error in handling multiple contexts:", error);
     }
   });
 
-  test("should display mocked weather data", async ({ page }) => {
+  test("mock weather api data", async ({ page }) => {
     const mockWeatherData = JSON.parse(
       fs.readFileSync(path.join(__dirname, "mockedata.json"), "utf8")
     );
@@ -109,7 +124,7 @@ test.describe("Weather.com tests", () => {
       }
     );
 
-    // Adding a listener for the response event
+    // Adding a listener for the response event to check the mock response is being sent
     page.on("response", (response) => {
       if (
         response
