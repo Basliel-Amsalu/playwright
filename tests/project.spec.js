@@ -16,7 +16,10 @@ test.describe("Weather.com tests", () => {
   });
 
   test("Navigate to Weather.com and search for a city", async () => {
-    await page.goto("https://www.bbc.com/weather");
+    await page.goto("https://www.bbc.com/weather", {
+      waitUntil: "networkidle",
+      timeout: 60000,
+    });
 
     const searchBar = await page.waitForSelector(
       "input#ls-c-search__input-label",
