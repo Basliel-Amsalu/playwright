@@ -137,7 +137,7 @@ test.describe("Weather.com tests", () => {
     ).toBeVisible();
   });
 
-  test("Extract weather information and generate PDF", async () => {
+  test("Extract weather information and documenting on PDF", async () => {
     try {
       await page.goto("https://www.bbc.com/weather/344979");
 
@@ -231,10 +231,18 @@ test.describe("Weather.com tests", () => {
   test("pagination and scrapping", async () => {
     await page.goto("https://www.bbc.com");
 
+    const doc = new PDFDocument();
+    const writeStream = fs.createWriteStream("scraped_data.pdf");
+    doc.pipe(writeStream);
+
     async function scrapePage(page) {
       const items = await page.$$eval("p", (elements) =>
         elements.map((element) => element.textContent.trim())
       );
+      doc
+        .addPage()
+        .fontSize(12)
+        .text(`Items: ${items.join(", ")}`);
       console.log(`Items: ${items.join(", ")}`);
     }
 
@@ -244,9 +252,11 @@ test.describe("Weather.com tests", () => {
     );
 
     console.log(links);
-    for (let link of links) {
+    for (let link of links.slice(0, 10)) {
       await page.goto(link);
       await scrapePage(page);
     }
+
+    doc.end();
   });
 });
