@@ -65,7 +65,7 @@ test.describe("Weather.com tests", () => {
         timeout: 60000,
       });
 
-      await page.waitForSelector('#wr-forecast', { timeout: 10000 });
+      await page.waitForSelector("#wr-forecast", { timeout: 10000 });
 
       await page.screenshot({ path: "weather.png" });
 
@@ -77,7 +77,7 @@ test.describe("Weather.com tests", () => {
 
   test("Handle multiple browser contexts", async () => {
     try {
-      await page.goto("https://www.bbc.com/weather/")
+      await page.goto("https://www.bbc.com/weather/");
       const context2 = await browser.newContext();
       const page2 = await context2.newPage();
       await page2.goto("https://www.bbc.com/weather/344979", {
@@ -134,4 +134,75 @@ test.describe("Weather.com tests", () => {
     ).toBeVisible();
   });
 
+  test("Extract weather information and generate PDF", async () => {
+    try {
+      await page.goto("https://www.bbc.com/weather/344979");
+
+      await page.waitForSelector(".wr-day-container", { timeout: 10000 });
+
+      const weatherData = [];
+      const listItems = await page.$$("li.wr-time-slot");
+
+      for (let listItem of listItems) {
+        const listItemButton = await listItem.$("button.wr-time-slot__inner");
+        await listItemButton.click();
+
+        const time = await listItem.$eval(".wr-time-slot-primary__time", (el) =>
+          el.textContent.trim()
+        );
+        const weatherDescription = await listItem.$eval(
+          ".wr-time-slot-primary__weather-type-description",
+          (el) => el.textContent.trim()
+        );
+        const temperature = await listItem.$eval(
+          ".wr-value--temperature--c",
+          (el) => el.textContent.trim()
+        );
+        const precipitation = await listItem.$eval(
+          ".wr-time-slot-primary__precipitation div.wr-u-font-weight-500",
+          (el) => el.textContent.trim()
+        );
+        const windSpeed = await listItem.$eval(
+          ".wr-wind-speed__description",
+          (el) => el.textContent.trim()
+        );
+
+        const humidity = await listItem.$eval(
+          "dt:has-text('Humidity') + dd",
+          (el) => el.textContent.trim()
+        );
+        const pressure = await listItem.$eval(
+          "dt:has-text('Pressure') + dd",
+          (el) => el.textContent.trim()
+        );
+        const visibility = await listItem.$eval(
+          "dt:has-text('Visibility') + dd",
+          (el) => el.textContent.trim()
+        );
+        const feelsLike = await listItem.$eval(
+          ".wr-time-slot-secondary__feels-like-temperature-value",
+          (el) => el.textContent.trim()
+        );
+
+        weatherData.push({
+          time,
+          weatherDescription,
+          temperature,
+          precipitation,
+          windSpeed,
+          humidity,
+          pressure,
+          visibility,
+          feelsLike,
+        });
+      }
+
+      console.log(weatherData);
+    } catch (error) {
+      console.error(
+        "Error in extracting weather information and generating PDF:",
+        error
+      );
+    }
+  });
 });
