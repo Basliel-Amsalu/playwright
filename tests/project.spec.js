@@ -77,6 +77,7 @@ test.describe("Weather.com tests", () => {
 
   test("Handle multiple browser contexts", async () => {
     try {
+      await page.goto("https://www.bbc.com/weather/")
       const context2 = await browser.newContext();
       const page2 = await context2.newPage();
       await page2.goto("https://www.bbc.com/weather/344979", {
