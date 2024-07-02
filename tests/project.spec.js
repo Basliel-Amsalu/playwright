@@ -65,6 +65,8 @@ test.describe("Weather.com tests", () => {
         timeout: 60000,
       });
 
+      await page.waitForSelector('#wr-forecast', { timeout: 10000 });
+
       await page.screenshot({ path: "weather.png" });
 
       await page.pdf({ path: "weather.pdf", format: "A4" });
@@ -72,4 +74,5 @@ test.describe("Weather.com tests", () => {
       console.error("Error in taking screenshot and generating PDF:", error);
     }
   });
+
 });
