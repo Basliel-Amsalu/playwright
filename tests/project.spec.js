@@ -152,7 +152,7 @@ test.describe("Weather.com tests", () => {
     ).toBeVisible();
   });
 
-  test("Extract weather information and documenting on PDF", async () => {
+  test("Extract weather information and document on PDF", async () => {
     try {
       await page.goto("https://www.bbc.com/weather/344979");
 
@@ -243,7 +243,7 @@ test.describe("Weather.com tests", () => {
     }
   });
 
-  test("pagination and scrapping", async () => {
+  test("paginate through links and extract infromation and document on pdf", async () => {
     await page.goto("https://www.bbc.com");
 
     const doc = new PDFDocument();
