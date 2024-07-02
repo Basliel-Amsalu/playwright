@@ -90,4 +90,32 @@ test.describe("Weather.com tests", () => {
     }
   });
 
+  test("should display mocked weather data", async ({ page }) => {
+    const mockWeatherData = JSON.parse(
+      fs.readFileSync(path.join(__dirname, "mockedata.json"), "utf8")
+    );
+
+    await page.route(
+      "https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/344979",
+      (route) => {
+        console.log("Intercepted request:", route.request().url());
+        route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify(mockWeatherData),
+        });
+      }
+    );
+
+    await page.goto("https://www.bbc.com/weather/344979");
+
+    await page.waitForSelector("#wr-forecast", { timeout: 60000 });
+
+    await expect(
+      page
+        .locator("#wr-forecast div")
+        .filter({ hasText: "Addis - Weather" })
+        .first()
+    ).toBeVisible();
+  });
+
 });
