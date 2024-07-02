@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit"); // only used for documenting scrapped/extracted data not for pdf generating test
 
-test.describe("Weather.com tests", () => {
+test.describe("BBC Weather website tests", () => {
   let browser;
   let context;
   let page;
