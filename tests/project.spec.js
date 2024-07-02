@@ -1,4 +1,7 @@
 const { test, expect } = require("@playwright/test");
+const fs = require("fs");
+const path = require("path");
+const PDFDocument = require("pdfkit");
 
 test.describe("Weather.com tests", () => {
   let browser;
@@ -198,6 +201,25 @@ test.describe("Weather.com tests", () => {
       }
 
       console.log(weatherData);
+
+      const doc = new PDFDocument();
+      doc.pipe(fs.createWriteStream("weather-details.pdf"));
+
+      weatherData.forEach((data, index) => {
+        doc.text(`Time Slot ${index + 1}`);
+        doc.text(`Time: ${data.time}`);
+        doc.text(`Weather: ${data.weatherDescription}`);
+        doc.text(`Temperature: ${data.temperature}`);
+        doc.text(`Precipitation: ${data.precipitation}`);
+        doc.text(`Wind Speed: ${data.windSpeed}`);
+        doc.text(`Humidity: ${data.humidity}`);
+        doc.text(`Pressure: ${data.pressure}`);
+        doc.text(`Visibility: ${data.visibility}`);
+        doc.text(`Feels Like: ${data.feelsLike}`);
+        doc.addPage();
+      });
+
+      doc.end();
     } catch (error) {
       console.error(
         "Error in extracting weather information and generating PDF:",
