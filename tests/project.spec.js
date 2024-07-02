@@ -227,4 +227,26 @@ test.describe("Weather.com tests", () => {
       );
     }
   });
+
+  test("pagination and scrapping", async () => {
+    await page.goto("https://www.bbc.com");
+
+    async function scrapePage(page) {
+      const items = await page.$$eval("p", (elements) =>
+        elements.map((element) => element.textContent.trim())
+      );
+      console.log(`Items: ${items.join(", ")}`);
+    }
+
+    const links = await page.$$eval(
+      'a[data-testid="internal-link"]',
+      (elements) => elements.map((element) => element.href)
+    );
+
+    console.log(links);
+    for (let link of links) {
+      await page.goto(link);
+      await scrapePage(page);
+    }
+  });
 });
