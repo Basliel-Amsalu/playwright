@@ -106,6 +106,22 @@ test.describe("Weather.com tests", () => {
       }
     );
 
+    // Adding a listener for the response event
+    page.on("response", (response) => {
+      if (
+        response
+          .url()
+          .includes(
+            "https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/344979"
+          )
+      ) {
+        console.log("Response received:", response.url());
+        response.json().then((data) => {
+          console.log("Response data:", data);
+        });
+      }
+    });
+
     await page.goto("https://www.bbc.com/weather/344979");
 
     await page.waitForSelector("#wr-forecast", { timeout: 60000 });
