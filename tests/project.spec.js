@@ -57,4 +57,19 @@ test.describe("Weather.com tests", () => {
       console.error("Error in navigating and searching:", error);
     }
   });
+
+  test("Take screenshot and generate PDF", async () => {
+    try {
+      await page.goto("https://www.bbc.com/weather/344979", {
+        waitUntil: "networkidle",
+        timeout: 60000,
+      });
+
+      await page.screenshot({ path: "weather.png" });
+
+      await page.pdf({ path: "weather.pdf", format: "A4" });
+    } catch (error) {
+      console.error("Error in taking screenshot and generating PDF:", error);
+    }
+  });
 });
