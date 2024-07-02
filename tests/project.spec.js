@@ -75,4 +75,18 @@ test.describe("Weather.com tests", () => {
     }
   });
 
+  test("Handle multiple browser contexts", async () => {
+    try {
+      const context2 = await browser.newContext();
+      const page2 = await context2.newPage();
+      await page2.goto("https://www.bbc.com/weather/344979", {
+        waitUntil: "load",
+        timeout: 60000,
+      });
+      await context2.close();
+    } catch (error) {
+      console.error("Error in handling multiple contexts:", error);
+    }
+  });
+
 });
