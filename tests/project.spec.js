@@ -31,7 +31,7 @@ test.describe("Weather.com tests", () => {
   test("Navigate to BBC Weather and search for a city", async () => {
     try {
       await page.goto("https://www.bbc.com/weather", {
-        waitUntil: "networkidle",
+        waitUntil: "load",
         timeout: 60000,
       });
 
